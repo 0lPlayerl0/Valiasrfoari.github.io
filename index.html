@@ -1,118 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>News</title>
-<style>
-<center>اخبار صحن ولیعصر</center>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اخبار</title>
+<!-- Import Vazirmatn Font for Farsi -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
+<style>
 body {
   background: #0f172a;
   color: #e5e7eb;
-  font-family: sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   margin: 0;
   padding: 20px;
 }
-.article {
+
+#news {
   max-width: 800px;
-  margin: 40px auto;
-  background: #1e293b; /* Slightly lighter than body for contrast */
-  padding: 20px;
+  margin: 0 auto;
+}
+
+.article {
+  background: #1e293b;
+  padding: 25px;
   border-radius: 12px;
+  margin-bottom: 40px;
+  border-right: 5px solid #22c55e; /* Green border right for RTL */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 }
+
+/* Title Style - Green */
+h2 {
+  margin: 0 0 15px 0;
+  color: #22c55e; /* Green */
+  font-size: 1.8rem;
+}
+
+/* Image Style - Under Title */
 .article img {
   width: 100%;
   height: auto;
   border-radius: 10px;
   object-fit: cover;
   max-height: 400px;
+  border: 2px solid #ef4444; /* Red border around image */
+  margin-bottom: 15px;
+  display: block;
 }
-h2 {
-  margin-top: 15px;
-  color: #38bdf8;
+
+/* Text Content */
+.content {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  border-top: 1px solid #ef4444; /* Red separator line */
+  padding-top: 15px;
 }
-p {
-  line-height: 1.6;
-}
+
 .error {
-  color: #ef4444;
+  color: #ef4444; /* Red error text */
   text-align: center;
+  font-size: 1.2rem;
+}
+
+.loading {
+  text-align: center;
+  color: #22c55e;
+  font-size: 1.2rem;
 }
 </style>
 </head>
 <body>
 
-<div id="news">Loading news...</div>
+<div id="news"><p class="loading">در حال بارگذاری اخبار...</p></div>
 
 <script>
 const newsContainer = document.getElementById("news");
 
-// Helper function to fetch text safely
 async function fetchText(url) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to load ${url}`);
+  if (!response.ok) throw new Error(`خطا در بارگذاری ${url}`);
   return await response.text();
 }
 
-// Main execution
 async function loadNews() {
   try {
-    // 1. Fetch the index list
     const response = await fetch("articles/index.json");
-    if (!response.ok) throw new Error("Failed to load article list");
+    if (!response.ok) throw new Error("خطا در بارگذاری لیست مقالات");
     
     const list = await response.json();
-    
-    // Clear loading text
     newsContainer.innerHTML = "";
 
-    // 2. Process each article
-    // We use Promise.all to ensure all articles load, or map to handle them individually
     const articlePromises = list.map(async (folder) => {
       try {
-        // Fetch text first so we have all data before rendering
         const textContent = await fetchText(`articles/${folder}/text.txt`);
         
         const container = document.createElement("div");
         container.className = "article";
 
         const title = document.createElement("h2");
-        // Assuming folder name is the title, or you could parse it
-        title.textContent = folder.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()); 
+        // Format folder name for display (replace dashes with spaces)
+        title.textContent = folder.replace(/-/g, " "); 
 
         const img = document.createElement("img");
         img.src = `articles/${folder}/image.jpg`;
-        img.alt = folder; // Good for accessibility
-        img.onerror = () => { img.style.display = 'none'; }; // Hide img if broken
+        img.alt = folder;
+        img.onerror = () => { img.style.display = 'none'; };
 
         const text = document.createElement("div");
         text.className = "content";
-        text.innerText = textContent; // Use innerText for safety against XSS
+        text.innerText = textContent;
 
-        container.append(img, title, text);
+        // Order: Title -> Image -> Text
+        container.append(title, img, text);
         return container;
       } catch (err) {
-        console.error(`Error loading article ${folder}:`, err);
-        return null; // Skip this article if it fails
+        console.error(`خطا در مقاله ${folder}:`, err);
+        return null;
       }
     });
 
-    // Wait for all articles to be prepared
     const articles = await Promise.all(articlePromises);
-
-    // Append valid articles to the DOM
     articles.forEach(article => {
       if (article) newsContainer.append(article);
     });
 
     if (newsContainer.children.length === 0) {
-      newsContainer.innerHTML = "<p class='error'>No articles found.</p>";
+      newsContainer.innerHTML = "<p class='error'>هیچ خبری یافت نشد.</p>";
     }
 
   } catch (error) {
     console.error(error);
-    newsContainer.innerHTML = `<p class='error'>Error loading news feed: ${error.message}</p>`;
+    newsContainer.innerHTML = `<p class='error'>خطا در بارگذاری اخبار: ${error.message}</p>`;
   }
 }
 
