@@ -3,40 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اخبار</title>
+<title>اخبار صحن ولیعصر</title>
 <!-- Import Vazirmatn Font for Farsi -->
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+<!-- Import Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: #000000; /* Pitch black background */
+  background: #000000;
   color: #e5e7eb;
   font-family: 'Vazirmatn', sans-serif;
   margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.header {
+  background: #111111;
+  padding: 30px 20px;
+  border-bottom: 2px solid #22c55e;
+}
+
+.header h1 {
+  margin: 0;
+  text-align: right;
+  color: #22c55e;
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+/* Main Container */
+.container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 20px;
+  gap: 30px;
+}
+
+/* Sidebar (Left Column) */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+/* Search Box */
+.search-box {
+  background: #111111;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #222;
+}
+
+.search-box h3 {
+  margin: 0 0 15px 0;
+  color: #22c55e;
+  font-size: 1.2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: #000;
+  color: #e5e7eb;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #22c55e;
+}
+
+/* Eitaa Link */
+.eitaa-box {
+  background: #111111;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #222;
+}
+
+.eitaa-box h3 {
+  margin: 0 0 15px 0;
+  color: #22c55e;
+  font-size: 1.2rem;
+}
+
+.eitaa-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  background: #22c55e;
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+
+.eitaa-link:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+.eitaa-link i {
+  font-size: 1.5rem;
+}
+
+/* News Container (Right Side) */
+.news-container {
+  flex: 1;
 }
 
 #news {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .article {
-  background: #111111; /* Very dark gray for contrast */
+  background: #111111;
   padding: 25px;
   border-radius: 12px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  border-right: 4px solid #22c55e;
+  transition: transform 0.3s;
 }
 
-/* Title Style - Green */
-h2 {
+.article:hover {
+  transform: translateX(-5px);
+}
+
+.article.hidden {
+  display: none;
+}
+
+.article h2 {
   margin: 0 0 15px 0;
-  color: #22c55e; /* Green */
+  color: #22c55e;
   font-size: 1.8rem;
 }
 
-/* Image Style - Under Title, No Borders */
 .article img {
   width: 100%;
   height: auto;
@@ -48,14 +171,11 @@ h2 {
   display: block;
 }
 
-/* Text Content - No Border */
 .content {
   line-height: 1.8;
   font-size: 1.1rem;
   color: #cbd5e1;
-  border: none;
-  padding-top: 15px;
-  white-space: pre-wrap; /* Preserves line breaks in text */
+  white-space: pre-wrap;
 }
 
 .error {
@@ -69,14 +189,70 @@ h2 {
   color: #22c55e;
   font-size: 1.2rem;
 }
+
+.no-results {
+  text-align: center;
+  color: #888;
+  padding: 40px;
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+}
 </style>
 </head>
 <body>
 
-<div id="news"><p class="loading">در حال بارگذاری اخبار...</p></div>
+<!-- Header -->
+<div class="header">
+  <h1>اخبار صحن ولیعصر</h1>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+  <!-- Sidebar (Left Column) -->
+  <aside class="sidebar">
+    <!-- Search Box -->
+    <div class="search-box">
+      <h3><i class="fas fa-search"></i> جستجو</h3>
+      <input type="text" class="search-input" id="searchInput" placeholder="عنوان خبر را جستجو کنید...">
+    </div>
+    
+    <!-- Eitaa Link -->
+    <div class="eitaa-box">
+      <h3><i class="fas fa-paper-plane"></i> کانال ایتا</h3>
+      <!-- REPLACE THE HREF BELOW WITH YOUR EITAA LINK -->
+      <a href="https://eitaa.com/valiasrfoari" class="eitaa-link" target="_blank">
+        <i class="fas fa-external-link-alt"></i>
+        <span>عضویت در کانال</span>
+      </a>
+    </div>
+  </aside>
+  
+  <!-- News Container (Right Side) -->
+  <main class="news-container">
+    <div id="news"><p class="loading">در حال بارگذاری اخبار...</p></div>
+  </main>
+</div>
 
 <script>
 const newsContainer = document.getElementById("news");
+const searchInput = document.getElementById("searchInput");
+let allArticles = [];
 
 async function fetchText(url) {
   const response = await fetch(url);
@@ -91,22 +267,19 @@ async function loadNews() {
     
     const list = await response.json();
     newsContainer.innerHTML = "";
+    allArticles = [];
 
     const articlePromises = list.map(async (folder) => {
       try {
         const fullText = await fetchText(`articles/${folder}/text.txt`);
-        
-        // Split text into lines
         const lines = fullText.split('\n');
-        
-        // First line becomes the title
         const titleText = lines[0].trim();
-        
-        // Remaining lines become the content
         const contentText = lines.slice(1).join('\n').trim();
         
         const container = document.createElement("div");
         container.className = "article";
+        container.dataset.title = titleText.toLowerCase();
+        container.dataset.folder = folder;
 
         const title = document.createElement("h2");
         title.textContent = titleText; 
@@ -114,16 +287,21 @@ async function loadNews() {
         const img = document.createElement("img");
         img.src = `articles/${folder}/cover.jpg`;
         img.alt = titleText;
-        img.onerror = () => { 
-          img.style.display = 'none';
-        };
+        img.onerror = () => { img.style.display = 'none'; };
 
         const text = document.createElement("div");
         text.className = "content";
         text.innerText = contentText;
 
-        // Order: Title -> Image -> Text
         container.append(title, img, text);
+        
+        const articleData = {
+          element: container,
+          title: titleText.toLowerCase(),
+          folder: folder
+        };
+        
+        allArticles.push(articleData);
         return container;
       } catch (err) {
         console.error(`خطا در مقاله ${folder}:`, err);
@@ -145,6 +323,34 @@ async function loadNews() {
     newsContainer.innerHTML = `<p class='error'>خطا در بارگذاری اخبار: ${error.message}</p>`;
   }
 }
+
+// Search Functionality
+searchInput.addEventListener('input', (e) => {
+  const searchTerm = e.target.value.toLowerCase().trim();
+  let visibleCount = 0;
+  
+  allArticles.forEach(article => {
+    if (searchTerm === '' || article.title.includes(searchTerm)) {
+      article.element.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      article.element.classList.add('hidden');
+    }
+  });
+  
+  // Show "no results" message if needed
+  const existingNoResults = document.querySelector('.no-results');
+  if (existingNoResults) {
+    existingNoResults.remove();
+  }
+  
+  if (visibleCount === 0 && searchTerm !== '') {
+    const noResults = document.createElement('p');
+    noResults.className = 'no-results';
+    noResults.textContent = 'هیچ خبری با این عنوان یافت نشد.';
+    newsContainer.appendChild(noResults);
+  }
+});
 
 loadNews();
 </script>
