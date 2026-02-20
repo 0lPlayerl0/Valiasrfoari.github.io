@@ -43,7 +43,7 @@ h2 {
   border-radius: 10px;
   object-fit: cover;
   max-height: 400px;
-  border: none; /* No border */
+  border: none;
   margin-bottom: 15px;
   display: block;
 }
@@ -53,12 +53,13 @@ h2 {
   line-height: 1.8;
   font-size: 1.1rem;
   color: #cbd5e1;
-  border: none; /* No border */
+  border: none;
   padding-top: 15px;
+  white-space: pre-wrap; /* Preserves line breaks in text */
 }
 
 .error {
-  color: #ef4444; /* Red error text */
+  color: #ef4444;
   text-align: center;
   font-size: 1.2rem;
 }
@@ -93,25 +94,33 @@ async function loadNews() {
 
     const articlePromises = list.map(async (folder) => {
       try {
-        const textContent = await fetchText(`articles/${folder}/text.txt`);
+        const fullText = await fetchText(`articles/${folder}/text.txt`);
+        
+        // Split text into lines
+        const lines = fullText.split('\n');
+        
+        // First line becomes the title
+        const titleText = lines[0].trim();
+        
+        // Remaining lines become the content
+        const contentText = lines.slice(1).join('\n').trim();
         
         const container = document.createElement("div");
         container.className = "article";
 
         const title = document.createElement("h2");
-        title.textContent = folder.replace(/-/g, " "); 
+        title.textContent = titleText; 
 
         const img = document.createElement("img");
-        img.src = `articles/${folder}/cover.jpg`; /* Changed to cover.jpg */
-        img.alt = folder;
+        img.src = `articles/${folder}/cover.jpg`;
+        img.alt = titleText;
         img.onerror = () => { 
           img.style.display = 'none';
-          console.log(`Image not found: articles/${folder}/cover.jpg`);
         };
 
         const text = document.createElement("div");
         text.className = "content";
-        text.innerText = textContent;
+        text.innerText = contentText;
 
         // Order: Title -> Image -> Text
         container.append(title, img, text);
